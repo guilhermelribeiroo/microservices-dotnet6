@@ -39,7 +39,7 @@ Benefícios de microserviços incluem:
 
 No entanto, usar microserviços apresenta desafios como a complexidade entre serviços, a necessidade de gerenciar a consistência de dados distribuídos e a sobrecarga adicional na infraestrutura de implantação.
 
-# Quais as desvantagem do cliente se comunicar diretamente com os microserviços?
+# Quais as desvantagens do cliente se comunicar diretamente com os microserviços?
 
 Embora uma comunicação direta pareça ser uma abordagem eficiente e descentralizada, algumas das desvantagens são:
 
