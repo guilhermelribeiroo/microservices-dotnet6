@@ -5,18 +5,18 @@ Aplicação de e-commerce construída em .NET 6 seguindo uma arquitetura de micr
 ## Arquitetura
 
 ```
-                                   ┌──────────────────┐
-                                   │   Shopping.Web    │  (Frontend MVC)
-                                   └─────────┬─────────┘
+                                   ┌────────────────────┐
+                                   │   Shopping.Web     │  (Frontend MVC)
+                                   └─────────┬──────────┘
                                              │
                                    ┌─────────▼─────────┐
-                                   │  API Gateway       │  (Ocelot)
+                                   │  API Gateway      │  (Ocelot)
                                    └─────────┬─────────┘
               ┌──────────────┬───────────────┼───────────────┬──────────────┐
               │              │               │               │              │
         ┌─────▼────┐  ┌──────▼─────┐  ┌──────▼─────┐  ┌──────▼─────┐ ┌──────▼─────┐
-        │ Product  │  │   Cart      │ │  Coupon    │  │    Order   │ │   Payment  │
-        │   API    │  │    API      │ │    API     │  │     API    │ │     API    │
+        │ Product  │  │   Cart     │  │  Coupon    │  │    Order   │ │   Payment  │
+        │   API    │  │    API     │  │    API     │  │     API    │ │     API    │
         └─────┬────┘  └──────┬─────┘  └──────┬─────┘  └──────┬─────┘ └──────┬─────┘
               │              │               │               │              │
           [MySQL]        [MySQL]         [MySQL]       ┌───────▼──────┐  [MySQL]
