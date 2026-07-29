@@ -1,91 +1,141 @@
-# O que é REST (Representational State Transfer)?
+# Shopping - E-commerce com Microsserviços (.NET 6)
 
-É um estilo de arquitetura de software utilizado para criação de serviços web.
-Define um conjunto de princípios e restrições que permitem que o sistemas se comuniquem de forma padronizada e escalável.
+Aplicação de e-commerce construída em .NET 6 seguindo uma arquitetura de microsserviços, com comunicação síncrona via API Gateway e comunicação assíncrona via mensageria, autenticação centralizada e persistência isolada por serviço (database-per-service).
 
-Em uma arquitetura REST, os recursos são identificados por URLs e utiliza métodos padrão do protocolo HTTP, como GET, POST, PUT e DELETE, para manipula-los.
-
-Princípios-chave do REST incluem:
-
-1. Cliente-Servidor: As duas partes são separadas.
-
-2. Comunicação Stateless: Cada solicitação de um cliente para o servidor contém todas as informações necessárias para entender e processar a requisição. 
-O servidor não mantém nenhum estado da sessão do cliente entre as solicitações.
-
-3. Cacheable: O cliente deve ser informado sobre as propriedades de cache de um recurso para que possa decidir quando deve ou não utilizar cache.
-
-4. Interface Uniforme e Baseado em Recursos: Uma interface uniforme entre cliente e servidor onde cada recurso é identificado por uma URI e são a entidade central no REST, recursos são manipulados por sua representação, mensagens auto-descritivas e HATEOAS. 
-Recusos podem ser objetos/coleções de dados ou serviços.
-
-5. Sitemas em camadas: O REST suporta a arquitetura em camadas, onde os componentes podem estar distribuidos em diferentes camadas, isso permite uma maior escalabilidade, separação de preocupações e flexibilidade na implementação. Podendo suportar load balancer, proxies, firewalls, etc.
-
-# O que são Microserviços?
-
-Microserviços são um estilo arquitetural de design de software em que uma aplicação é dividida em pequenos serviços independentes e autônomos. Cada serviço é responsável por uma função específica e pode ser desenvolvido, implantado e dimensionado de forma independente dos outros serviços.
-
-Em contraste com uma abordagem monolítica, em que todas as funcionalidades são agrupadas em um único código-base e implantadas juntas, os microserviços permitem que os diferentes componentes da aplicação sejam desenvolvidos e mantidos separadamente.
-
-Cada microserviço é construído em torno de um contexto de negócio delimitado, o que significa que ele se concentra em uma tarefa específica, como gerenciamento de usuários, processamento de pagamentos ou envio de e-mails. Os serviços podem se comunicar entre si por meio de APIs (Interfaces de Programação de Aplicativos) e trocar dados usando protocolos como HTTP/REST, mensagens assíncronas ou outros mecanismos.
-
-Benefícios de microserviços incluem:
-
-1. Escalabilidade e Flexibilidade: Esse estilo arquitetural permite escalar e implantar cada serviço individualmente, o que possiblita ajustar a capacidade e o desempenho de cada parte da aplicação de forma independente.
-
-2. Manutenção Simplificada: As equipes de desenvolvimento podem trabalhar de forma mais independente, atualizando, corrigindo bugs ou adicionando novos recursos em serviços específicos sem afetar o restante da aplicação.
-
-3. Resiliência e Tolerância a Falhas: Se um microserviço falha, os outros podem continuar funcionando normalmente, garantindo que a aplicação como um todo permaneça operacional.
-
-4. Tecnologias e linguagens diversas: Cada microserviço pode ser implementado utilizando a tecnologia ou linguagem mais adequada para sua tarefa específica, permitindo utilizar a melhor ferramenta para cada necessidade.
-
-No entanto, usar microserviços apresenta desafios como a complexidade entre serviços, a necessidade de gerenciar a consistência de dados distribuídos e a sobrecarga adicional na infraestrutura de implantação.
-
-# Quais as desvantagens do cliente se comunicar diretamente com os microserviços?
-
-Embora uma comunicação direta pareça ser uma abordagem eficiente e descentralizada, algumas das desvantagens são:
-
-1. Acoplamento entre cliente e microserviço: Os clientes precisam saber os detalhes de implementação dos serviços, qualquer alteração nesses serviços pode exigir modificações significativas nos clientes. Isso pode levar a um cenário onde uma pequena alteração no serviço pode levar a várias modificações nos clientes, o que torna o sistema menos flexível e suscetível a falhas.
-
-2. Segurança e Autorização: Quando o cliente se comunica diretamente com os microserviços, a gestão da segurança e autorização pode se tornar complexa, cada cliente precisa lidar com a autorização de cada serviço separadamente, isso pode levar a inconsistências na apllicação de politicas de segurança e tornar o sistema mais vulnerável a erros e violações de segurança. 
-
-3. Escalabilidade limitada: A comunicação direta entre o cliente e os microserviços pode dificultar a escalabilidade horizontal. Se o número de clientes ou a carga de solicitações aumentar significativamente, pode ser necessário ajustar manualmente ou redistribuir as solicitações entre os microserviços para evitar gargalos.
-
-# Como lidar com isso?
-
-Uma forma é utilizar um API Gateway para intermediar a comunicação entre os clientes e os microserviços, o API Gateway pode lidar com a complexidade da comunicação, fornecer uma interface abstrata e simplificada para os clientes e gerenciar a autenticação, autorização e controle de acesso.
-
-Com um API Gateway também é possível a coleta centralizada de métricas, logs e informações de monitoramento, versionamento de APIs, cache e load balancer.
-
-# Como rodar o projeto?
-
-Deixei um docker-compose para facilitar levantar o RabbitMQ e o MySQL. 
-
-<img src="https://github.com/guilhermeLRibeiroo/microservices-dotnet6/assets/48655138/a5389999-40ae-4051-beff-662fc8ebc428"></img>
-
-É necessário abrir a conexão com o MySQL para criar os bancos de dados. (eu utilizei HeidiSQL)
+## Arquitetura
 
 ```
-    IP: 127.0.0.1
-    Porta: 3306
-    User: root
-    Password: rootpwd
+                                   ┌──────────────────┐
+                                   │   Shopping.Web    │  (Frontend MVC)
+                                   └─────────┬─────────┘
+                                             │
+                                   ┌─────────▼─────────┐
+                                   │  API Gateway       │  (Ocelot)
+                                   └─────────┬─────────┘
+              ┌──────────────┬───────────────┼───────────────┬──────────────┐
+              │              │               │               │              │
+        ┌─────▼────┐  ┌──────▼─────┐  ┌──────▼─────┐  ┌──────▼─────┐ ┌──────▼─────┐
+        │ Product  │  │   Cart      │  │  Coupon    │  │  Order      │ │  Payment   │
+        │   API    │  │    API      │  │    API     │  │   API       │ │    API     │
+        └─────┬────┘  └──────┬─────┘  └──────┬─────┘  └──────┬─────┘ └──────┬─────┘
+              │              │               │               │              │
+          [MySQL]        [MySQL]         [MySQL]      ┌───────▼──────┐  [MySQL]
+                                                       │  RabbitMQ    │◄─────┘
+                                                       │ (MessageBus) │
+                                                       └───────┬──────┘
+                                                       ┌───────▼──────┐
+                                                       │Payment        │
+                                                       │Processor      │
+                                                       └───────┬──────┘
+                                                       ┌───────▼──────┐
+                                                       │   Email       │
+                                                       └───────────────┘
+
+        ┌──────────────────┐
+        │  IdentityServer   │  (Autenticação/Autorização - OAuth2/OIDC)
+        └──────────────────┘
 ```
 
-E adicionar as seguintes databases:
+Todos os serviços autenticam requisições via JWT emitido pelo **IdentityServer**, e o **API Gateway (Ocelot)** é o único ponto de entrada exposto ao cliente, roteando as chamadas para o microsserviço correto.
 
-+ shopping_product_api
-+ shopping_order_api
-+ shopping_email
-+ shopping_coupon_api
-+ shopping_cart_api
-+ shopping_identity_server
+## Serviços
 
-E é para ficar assim:
+| Serviço | Responsabilidade | Comunicação |
+|---|---|---|
+| `Shopping.Web` | Frontend MVC (catálogo, carrinho, checkout) | HTTP → API Gateway |
+| `Shopping.APIGateway` | Ponto único de entrada, roteamento e autenticação (Ocelot + JWT) | HTTP |
+| `Shopping.ProductAPI` | Catálogo de produtos | HTTP |
+| `Shopping.CartAPI` | Carrinho de compras | HTTP + RabbitMQ (checkout) |
+| `Shopping.CouponAPI` | Cupons de desconto | HTTP |
+| `Shopping.OrderAPI` | Criação e consulta de pedidos | HTTP + RabbitMQ |
+| `Shopping.PaymentAPI` | Orquestração de pagamento do pedido | HTTP + RabbitMQ |
+| `Shopping.PaymentProcessor` | Processamento assíncrono de pagamentos (worker) | RabbitMQ |
+| `Shopping.Email` | Envio de notificações por e-mail (confirmação de pedido/pagamento) | RabbitMQ |
+| `Shopping.MessageBus` | Abstração de mensageria compartilhada entre serviços | — |
+| `IdentityServer` | Emissão/validação de tokens (OAuth2/OpenID Connect) | HTTP |
+| `DatabaseMigrations` | Aplica as migrations em todos os DbContexts na subida do projeto | — |
 
-<img src="https://github.com/guilhermeLRibeiroo/microservices-dotnet6/assets/48655138/bce40ecb-b22f-4ff0-8a16-5592c68756c4"></img>
+## Stack Técnica
 
-Adicionei um código que aplica as migrations nos DbContexts uma única vez assim que iniciar o projeto.
-### Não esquecer de selecionar "Multiple startup projects" na configuração de projeto inicial e definir como Start todos menos "DatabaseMigrations", "PaymentProcessor" e "MessageBus" pois são class libraries.
+- **.NET 6 / ASP.NET Core** — Web APIs e MVC
+- **Ocelot** — API Gateway
+- **IdentityServer** — Autenticação e autorização (OAuth2/OIDC), com emissão de JWT
+- **Entity Framework Core + Pomelo (MySQL)** — persistência, um banco por serviço
+- **RabbitMQ** — mensageria assíncrona entre Cart, Order, Payment, PaymentProcessor e Email
+- **AutoMapper** — mapeamento entre entidades e DTOs
+- **Swagger / Swashbuckle** — documentação interativa de cada API
+- **Docker Compose** — infraestrutura local (MySQL + RabbitMQ)
 
-<img src="https://github.com/guilhermeLRibeiroo/microservices-dotnet6/assets/48655138/4be51f4d-7f96-408f-aaa7-ddfb7c2628ef"></img>
+## Principais decisões de arquitetura
 
-Depois disso é só dar Start no VisualStudio.
+- **Database-per-service:** cada microsserviço tem seu próprio schema MySQL, evitando acoplamento via banco de dados compartilhado.
+- **Mensageria assíncrona para o fluxo de checkout:** a confirmação de pedido, processamento de pagamento e disparo de e-mail acontecem via RabbitMQ, desacoplando os serviços e evitando chamadas síncronas encadeadas (que aumentariam a latência e o acoplamento temporal).
+- **API Gateway como fachada única:** o cliente (Shopping.Web) nunca conhece os endereços dos microsserviços individualmente — toda a comunicação passa pelo Ocelot, que também centraliza a validação do token JWT.
+- **Autenticação centralizada:** o IdentityServer é o único emissor de tokens, permitindo que todos os serviços validem a mesma identidade sem duplicar lógica de autenticação.
+
+## Como rodar o projeto
+
+### Pré-requisitos
+- .NET 6 SDK
+- Docker e Docker Compose
+- Visual Studio (ou outra IDE com suporte a múltiplos projetos de inicialização)
+- Um cliente MySQL (ex: HeidiSQL, DBeaver) para criar os bancos
+
+### Passo a passo
+
+1. Suba a infraestrutura local (MySQL + RabbitMQ):
+   ```bash
+   docker-compose up -d
+   ```
+
+2. Conecte-se ao MySQL e crie os bancos de cada serviço:
+   ```
+   Host: 127.0.0.1
+   Porta: 3306
+   Usuário: root
+   Senha: rootpwd
+   ```
+   Bancos necessários:
+   - `shopping_product_api`
+   - `shopping_order_api`
+   - `shopping_email`
+   - `shopping_coupon_api`
+   - `shopping_cart_api`
+   - `shopping_identity_server`
+
+3. No Visual Studio, configure **"Multiple startup projects"** e defina como `Start` todos os projetos, **exceto**:
+   - `DatabaseMigrations` (executa uma vez e aplica as migrations automaticamente)
+   - `PaymentProcessor` e `MessageBus` (são class libraries, não executáveis)
+
+4. Rode a solução. As migrations serão aplicadas automaticamente na primeira subida.
+
+5. Acesse o Swagger de cada API para explorar os endpoints, ou o `Shopping.Web` para o fluxo completo de compra.
+
+## Estrutura do repositório
+
+```
+microservices-dotnet6/
+├── DatabaseMigrations/       # Aplica migrations em todos os DbContexts
+├── IdentityServer/           # Autenticação e emissão de tokens
+├── Shopping.APIGateway/      # Ocelot - roteamento e ponto único de entrada
+├── Shopping.CartAPI/
+├── Shopping.CouponAPI/
+├── Shopping.Email/
+├── Shopping.MessageBus/      # Abstração de mensageria (RabbitMQ)
+├── Shopping.OrderAPI/
+├── Shopping.PaymentAPI/
+├── Shopping.PaymentProcessor/
+├── Shopping.ProductAPI/
+└── Shopping.Web/             # Frontend MVC
+```
+
+## Possíveis evoluções
+
+- Adicionar testes automatizados (unitários e de integração) — hoje o repositório não possui suíte de testes.
+- Circuit breaker / retry policy (ex: Polly) nas chamadas entre API Gateway e serviços.
+- Observabilidade centralizada (logs estruturados + tracing distribuído, ex: OpenTelemetry).
+- Health checks por serviço, expostos via API Gateway.
+
+---
+
+Projeto de estudo de arquitetura de microsserviços com .NET 6, cobrindo comunicação síncrona e assíncrona, autenticação centralizada e persistência isolada por serviço.
