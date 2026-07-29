@@ -15,24 +15,24 @@ Aplicação de e-commerce construída em .NET 6 seguindo uma arquitetura de micr
               ┌──────────────┬───────────────┼───────────────┬──────────────┐
               │              │               │               │              │
         ┌─────▼────┐  ┌──────▼─────┐  ┌──────▼─────┐  ┌──────▼─────┐ ┌──────▼─────┐
-        │ Product  │  │   Cart      │  │  Coupon    │  │  Order      │ │  Payment   │
-        │   API    │  │    API      │  │    API     │  │   API       │ │    API     │
+        │ Product  │  │   Cart      │ │  Coupon    │  │    Order   │ │   Payment  │
+        │   API    │  │    API      │ │    API     │  │     API    │ │     API    │
         └─────┬────┘  └──────┬─────┘  └──────┬─────┘  └──────┬─────┘ └──────┬─────┘
               │              │               │               │              │
-          [MySQL]        [MySQL]         [MySQL]      ┌───────▼──────┐  [MySQL]
-                                                       │  RabbitMQ    │◄─────┘
+          [MySQL]        [MySQL]         [MySQL]       ┌───────▼──────┐  [MySQL]
+                                                       │  RabbitMQ    │◄────┘
                                                        │ (MessageBus) │
                                                        └───────┬──────┘
                                                        ┌───────▼──────┐
-                                                       │Payment        │
-                                                       │Processor      │
+                                                       │   Payment    │
+                                                       │   Processor  │
                                                        └───────┬──────┘
                                                        ┌───────▼──────┐
-                                                       │   Email       │
-                                                       └───────────────┘
+                                                       │    Email     │
+                                                       └──────────────┘
 
         ┌──────────────────┐
-        │  IdentityServer   │  (Autenticação/Autorização - OAuth2/OIDC)
+        │  IdentityServer  │  (Autenticação/Autorização - OAuth2/OIDC)
         └──────────────────┘
 ```
 
